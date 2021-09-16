@@ -1,7 +1,9 @@
-from tkinter import Entry, Frame, Tk, Label, Button, Checkbutton
+from tkinter import Entry, Frame, Tk, Label, Button, Checkbutton, messagebox
 import os, Frame2
+import urllib
 from tkinter.constants import LEFT, RIGHT
 from PIL import Image, ImageTk
+import urllib.request, urllib.error
 
 
 class Frame1:
@@ -56,11 +58,20 @@ class Frame1:
     def pack(self):
         self.__frame1.pack(fill="both", expand=1)
 
+    def __checkConnection(self):
+        try:
+            urllib.request.urlopen("http://www.google.com", timeout=1)
+            return True
+        except urllib.error.URLError as e:
+            return False
+
     def __SignIn(self):
-        self.__frame1.forget()
-        # self.__frame2.pack()
-        self.__frame2 = Frame2.Frame2(self.__master)
-        self.__frame2.pack()
+        if self.__checkConnection() == False:
+            messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
+        else:
+            self.__frame1.forget()
+            self.__frame2 = Frame2.Frame2(self.__master)
+            self.__frame2.pack()
 
     def __FaceSignIn(self):
         pass
