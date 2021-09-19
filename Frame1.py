@@ -15,7 +15,7 @@ class Frame1:
 
     def __GUIconfig(self):
         img = ImageTk.PhotoImage(file=os.path.join(os.getcwd(), "resource\logo1.png"))
-        self.__master.title("My Profile | Thuy Loi University")
+        self.__master.title("EDAT | Thuy Loi University")
         self.__master.geometry("1000x600")
         self.__master.resizable(False, False)
         self.__frame1.config(width=1000, height=600)
