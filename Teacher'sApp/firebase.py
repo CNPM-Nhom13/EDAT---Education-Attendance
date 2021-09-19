@@ -33,5 +33,9 @@ def upload():
     storage.child(cloud_path).put(local_path)
 
 
+def uploadDatabase():
+    storage.child("database/database.db").put("database/database.db")
+
+
 def delete():
     storage.delete(cloud_path)
