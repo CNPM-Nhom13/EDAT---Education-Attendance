@@ -1,5 +1,6 @@
+import sqlite3
 from tkinter import Frame, Tk, Button, Label, Entry
-from PIL import ImageTk
+from PIL import Image, ImageTk
 import os, Frame1
 
 
@@ -50,6 +51,7 @@ class Frame2:
             height=50,
             image=imgbt,
             compound="center",
+            command=self.__showInfo,
         )
         bt2.image_names = imgbt
         bt2.place(x=10, y=315)
@@ -94,10 +96,117 @@ class Frame2:
         self.__frame2.pack(fill="both", expand=1)
 
     def __SignOut(self):
+        Frame1.MyID = None
         self.__frame2.forget()
         self.__frame1 = Frame1.Frame1(self.__master)
         self.__frame1.pack()
 
+    def __showInfo(self):
+        connect = sqlite3.connect(os.path.join(os.getcwd(), r"database\database.db"))
+        cursor = connect.execute("SELECT * FROM people WHERE ID=" + str(Frame1.MyID))
+        record = None
+        for i in cursor:
+            record = i
+        img = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2b.png")
+        imgbt = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2ba.png")
+        imgbtt = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2bb.png")
 
-# root = Tk()
-# root.mainloop()
+        lb2b = Label(self.__frame2, image=img)
+        lb2b.image_names = img
+        lb2b.place(x=310, y=10)
+
+        lbName = Label(
+            self.__frame2,
+            text=record[2],
+            font=("Arial", 20),
+            width=283,
+            height=50,
+            image=imgbt,
+            compound="center",
+        )
+        lbName.image_names = imgbt
+        lbName.place(x=347, y=140)
+
+        lbName = Label(
+            self.__frame2,
+            text=record[3],
+            font=("Arial", 20),
+            width=283,
+            height=50,
+            image=imgbt,
+            compound="center",
+        )
+        lbName.image_names = imgbt
+        lbName.place(x=667, y=140)
+
+        lbName = Label(
+            self.__frame2,
+            text=record[4],
+            font=("Arial", 20),
+            width=283,
+            height=50,
+            image=imgbt,
+            compound="center",
+        )
+        lbName.image_names = imgbt
+        lbName.place(x=347, y=232)
+
+        lbName = Label(
+            self.__frame2,
+            text=record[5],
+            font=("Arial", 20),
+            width=283,
+            height=50,
+            image=imgbt,
+            compound="center",
+        )
+        lbName.image_names = imgbt
+        lbName.place(x=667, y=232)
+
+        lbName = Label(
+            self.__frame2,
+            text=record[6],
+            font=("Arial", 20),
+            width=283,
+            height=50,
+            image=imgbt,
+            compound="center",
+        )
+        lbName.image_names = imgbt
+        lbName.place(x=347, y=324)
+
+        lbName = Label(
+            self.__frame2,
+            text=record[8],
+            font=("Arial", 20),
+            width=283,
+            height=50,
+            image=imgbt,
+            compound="center",
+        )
+        lbName.image_names = imgbt
+        lbName.place(x=667, y=324)
+
+        lbName = Label(
+            self.__frame2,
+            text=record[7],
+            font=("Arial", 15),
+            width=605,
+            height=50,
+            image=imgbtt,
+            compound="center",
+        )
+        lbName.image_names = imgbtt
+        lbName.place(x=347, y=416)
+
+        lbName = Label(
+            self.__frame2,
+            text=record[9],
+            font=("Arial", 15),
+            width=605,
+            height=50,
+            image=imgbtt,
+            compound="center",
+        )
+        lbName.image_names = imgbtt
+        lbName.place(x=347, y=508)
