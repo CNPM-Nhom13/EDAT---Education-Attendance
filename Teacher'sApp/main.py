@@ -1,4 +1,4 @@
-import threading, cv2, os, sqlite3, shutil, firebase, ConnectionCheck, time
+import threading, cv2, os, sqlite3, shutil, firebase, ConnectionCheck, time, Addstudent
 from tkinter import Entry, Frame, Tk, Button, Label, Toplevel, ttk, messagebox
 from PIL import Image, ImageTk
 import numpy as np
@@ -200,9 +200,10 @@ class MyGui:
             if not ConnectionCheck.internet_on():
                 messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
             else:
-                self.__dldtb()
-                tl = Toplevel(self.__frame1)
-                tl.mainloop()
+                self.__frame1.forget()
+                self.__addFrame = Addstudent.MyFrame(self.__master)
+                self.__addFrame.pack()
+                self.__Config()
         except:
             messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
 
@@ -217,6 +218,13 @@ def dowloadDTB():
             firebase.dowloadDatabase()
     except:
         messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
+
+
+def dowloadTN():
+    if ConnectionCheck.internet_on():
+        if not os.path.exists("recognizer"):
+            os.mkdir("recognizer")
+        firebase.dowload()
 
 
 def main():
@@ -235,5 +243,7 @@ def main():
 
 if __name__ == "__main__":
     thr1 = threading.Thread(name="Thread-1", target=dowloadDTB)
+    thr2 = threading.Thread(name="Thread-2", target=dowloadTN)
     thr1.start()
+    thr2.start()
     main()
