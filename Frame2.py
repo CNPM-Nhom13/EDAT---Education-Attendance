@@ -26,9 +26,10 @@ class Frame2:
             text="Đăng xuất",
             fg="red",
             font=("Arial", 15, "bold"),
-            width=10,
+            width=23,
+            borderwidth=4,
             command=self.__SignOut,
-        ).place(x=10, y=187)
+        ).place(x=10, y=185)
 
         imgbt = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\q.png")
         bt1 = Button(
@@ -88,6 +89,7 @@ class Frame2:
             height=50,
             image=imgbt,
             compound="center",
+            command=self.__CommingSoon,
         )
         bt5.image_names = imgbt
         bt5.place(x=10, y=531)
@@ -103,9 +105,11 @@ class Frame2:
 
     def __showInfo(self):
         connect = sqlite3.connect(os.path.join(os.getcwd(), r"database\database.db"))
-        cursor = connect.execute("SELECT * FROM people WHERE ID=" + str(Frame1.MyID))
+        self.__cursor = connect.execute(
+            "SELECT * FROM people WHERE ID=" + str(Frame1.MyID)
+        )
         record = None
-        for i in cursor:
+        for i in self.__cursor:
             record = i
         img = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2b.png")
         imgbt = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2ba.png")
@@ -210,3 +214,6 @@ class Frame2:
         )
         lbName.image_names = imgbtt
         lbName.place(x=347, y=508)
+
+    def __CommingSoon(self):
+        self.__config()

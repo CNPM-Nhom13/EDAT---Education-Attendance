@@ -47,10 +47,14 @@ class Frame1:
         entry1 = Entry(self.__frame1, width=20, font=("Arial", 20), justify=RIGHT)
         entry1.place(x=600, y=150)
 
-        Label(self.__frame1, text="Mật Khẩu:", font=("Arial", 15, "bold")).place(
-            x=600, y=220
+        Label(
+            self.__frame1,
+            text="Mật Khẩu:",
+            font=("Arial", 15, "bold"),
+        ).place(x=600, y=220)
+        entry2 = Entry(
+            self.__frame1, width=20, font=("Arial", 20), show="*", justify=RIGHT
         )
-        entry2 = Entry(self.__frame1, width=20, font=("Arial", 20), justify=RIGHT)
         entry2.place(x=600, y=250)
         return entry1, entry2
 
