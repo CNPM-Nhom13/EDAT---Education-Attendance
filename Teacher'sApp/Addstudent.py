@@ -87,7 +87,9 @@ class MyFrame:
             width=8,
             font=("Arial", 10, "bold"),
         ).grid(row=1, column=0, pady=10)
-        etr6 = Entry(frame, font=("Arial", 10))
+        ots = ["Công Nghệ Thông Tin", "Kinh Tế", "Cơ Khí"]
+        etr6 = ttk.Combobox(frame, font=("Arial", 8), values=ots)
+        etr6.current(0)
         etr6.grid(row=1, column=1, pady=10)
 
         Label(
