@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import urllib.request, urllib.error
 
 MyID = None
+MyMajor = None
 
 
 class Frame1:
@@ -81,7 +82,7 @@ class Frame1:
                     "Error", "Tài khoản và mật khẩu không được để trống"
                 )
             else:
-                global MyID
+                global MyID, MyMajor
                 MyID = id
                 connect = sqlite3.connect(
                     os.path.join(os.getcwd(), r"database\database.db")
@@ -91,6 +92,7 @@ class Frame1:
                 for row in cursor:
                     if str(id) == str(row[0]) and str(pw) == str(row[1]):
                         isRecordExist = 1
+                        MyMajor = row[7]
                 if isRecordExist == 1:
                     self.__frame1.forget()
                     self.__frame2 = Frame2.Frame2(self.__master)

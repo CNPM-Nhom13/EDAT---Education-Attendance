@@ -77,6 +77,7 @@ class Frame2:
             height=50,
             image=imgbt,
             compound="center",
+            command=self.__ctdt,
         )
         bt4.image_names = imgbt
         bt4.place(x=10, y=459)
@@ -214,6 +215,19 @@ class Frame2:
         )
         lbName.image_names = imgbtt
         lbName.place(x=347, y=508)
+
+    def __ctdt(self):
+        mj = (
+            "cntt"
+            if Frame1.MyMajor == "Công Nghệ Thông Tin"
+            else "kte"
+            if Frame1.MyMajor == "Kinh Tế"
+            else "ck"
+        )
+        img = ImageTk.PhotoImage(file="resource\{}.png".format(mj))
+        lb = Label(self.__frame2, image=img)
+        lb.image_names = img
+        lb.place(x=310, y=10)
 
     def __CommingSoon(self):
         self.__config()
