@@ -1,5 +1,5 @@
 import sqlite3
-from tkinter import Frame, Tk, Button, Label, Entry
+from tkinter import Frame, Tk, Button, Label, Entry, ttk, messagebox
 from PIL import Image, ImageTk
 import os, Frame1
 
@@ -65,6 +65,7 @@ class Frame2:
             height=50,
             image=imgbt,
             compound="center",
+            command=self.__updateInfo,
         )
         bt3.image_names = imgbt
         bt3.place(x=10, y=387)
@@ -215,6 +216,8 @@ class Frame2:
         )
         lbName.image_names = imgbtt
         lbName.place(x=347, y=508)
+        connect.commit()
+        connect.close()
 
     def __ctdt(self):
         mj = (
@@ -228,6 +231,69 @@ class Frame2:
         lb = Label(self.__frame2, image=img)
         lb.image_names = img
         lb.place(x=310, y=10)
+
+    def __updateInfo(self):
+        frame3 = Frame(self.__frame2)
+        frame3.place(x=310, y=10)
+        img = ImageTk.PhotoImage(file=r"resource\frame2c.png")
+        lb = Label(frame3, image=img)
+        lb.image_names = img
+        lb.pack()
+
+        etrName = Entry(frame3, font=("Arial", 15))
+        etrName.place(x=300, y=130)
+
+        options = ["", "Nam", "Nữ", "Khác"]
+        etrGender = ttk.Combobox(frame3, font=("Arial", 15), width=18, values=options)
+        etrGender.current(0)
+        etrGender.place(x=300, y=210)
+
+        etrSDT = Entry(frame3, font=("Arial", 15))
+        etrSDT.place(x=300, y=290)
+
+        etrFolk = Entry(frame3, font=("Arial", 15))
+        etrFolk.place(x=300, y=370)
+
+        etrAddress = Entry(frame3, font=("Arial", 15))
+        etrAddress.place(x=300, y=450)
+
+        lst = [etrName, etrGender, etrSDT, etrFolk, etrAddress]
+
+        Button(
+            frame3,
+            text="Submit",
+            fg="Green",
+            font=("Arial", 20, "bold"),
+            command=lambda: self.__modifyInfo(lst, frame3),
+        ).place(
+            x=280,
+            y=490,
+        )
+
+    def __modifyInfo(self, lst, frame3):
+        try:
+            slst = [i.get() for i in lst]
+            connect = sqlite3.connect(
+                os.path.join(os.getcwd(), r"database\database.db")
+            )
+            connect.execute(
+                "UPDATE people SET NAME='"
+                + str(slst[0])
+                + "', GENDER='"
+                + str(slst[1])
+                + "', SDT='"
+                + str(slst[2])
+                + "', FOLK='"
+                + str(slst[3])
+                + "', ADDRESS='"
+                + str(slst[4] + "' WHERE ID=" + str(Frame1.MyID))
+            )
+            connect.commit()
+            connect.close()
+            messagebox.showinfo("Done", "Chỉnh sửa thông tin thành công")
+            frame3.forget()
+        except Exception:
+            messagebox.showwarning("Error", "Chỉnh sửa thông tin thất bại")
 
     def __CommingSoon(self):
         self.__config()
