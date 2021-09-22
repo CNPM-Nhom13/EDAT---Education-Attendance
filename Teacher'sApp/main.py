@@ -19,38 +19,41 @@ class MyGui:
         self.__master.title("EDAT for teacher")
         self.__master.resizable(False, False)
 
-        self.__frame1 = Frame(self.__master)
-        self.__frame1.pack(pady=130)
+        self.__frame = Frame(self.__master, width=600, height=520)
+        self.__frameConfig()
+        self.__frame1 = Frame(self.__master, width=600, height=520)
 
-        Label(self.__frame1, text="ID: ", font=("Arial", 20, "bold")).grid(
-            row=0, column=0
+    def __frameConfig(self):
+        self.__frame.pack()
+        Label(self.__frame, text="ID GV:", font=("Arial", 20, "bold")).place(
+            x=165, y=150
         )
-        etr1 = Entry(self.__frame1, font=("Arial", 20), justify="right")
-        etr1.grid(row=0, column=1, pady=10)
-        Label(self.__frame1, text="PW: ", font=("Arial", 20, "bold")).grid(
-            row=1, column=0
-        )
-        etr2 = Entry(self.__frame1, font=("Arial", 20), show="*", justify="right")
-        etr2.grid(row=1, column=1, pady=10)
+        etr1 = Entry(self.__frame, font=("Arial", 20), width=10, justify="right")
+        etr1.place(x=275, y=150)
 
-        sbm = Button(
-            self.__frame1,
-            text="Submit",
-            fg="green",
-            font=("Arial", 20, "bold"),
-            command=lambda: self.__getInfo(etr1, etr2),
+        Label(self.__frame, text="PW GV:", font=("Arial", 20, "bold")).place(
+            x=165, y=230
         )
-        sbm.grid(row=2, column=0, columnspan=2, pady=10)
+        etr2 = Entry(self.__frame, font=("Arial", 20), width=10, justify="right")
+        etr2.place(x=275, y=230)
 
         Button(
-            self.__frame1,
-            text="Add new student info",
-            fg="Orange",
+            self.__frame,
+            text="Submit",
             font=("Arial", 20, "bold"),
-            command=self.__addStudent,
-        ).grid(row=3, column=0, columnspan=2, pady=10)
+            fg="green",
+            command=lambda: self.__signIn(etr1, etr2),
+        ).place(x=310, y=300)
+        Button(
+            self.__frame,
+            text="Quit",
+            font=("Arial", 20, "bold"),
+            width=6,
+            fg="red",
+            command=self.__master.destroy,
+        ).place(x=170, y=300)
 
-    def __getInfo(self, etr1, etr2):
+    def __signIn(self, etr1, etr2):
         connection = False
         try:
             if not ConnectionCheck.internet_on():
@@ -60,12 +63,90 @@ class MyGui:
         except Exception:
             messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
         if connection == True:
-            self.__id, pw = etr1.get(), etr2.get()
+            id, pw = etr1.get(), etr2.get()
 
-            if self.__id == "" or pw == "":
-                messagebox.showwarning(
-                    "Can't Sign In", "Tài khoản và mật khẩu không được để trống"
+            if self.__id == "":
+                messagebox.showwarning("Can't Sign In", "Tài khoản không được để trống")
+            else:
+                connect = sqlite3.connect(
+                    os.path.join(os.getcwd(), r"database/database.db")
                 )
+                query = "SELECT * FROM teacher WHERE ID=" + str(id)
+                cursor = connect.execute(query)
+
+                isRecordExist = 0
+                for row in cursor:
+                    if int(id) == int(row[0]) and int(pw) == int(row[1]):
+                        isRecordExist = 1
+
+                if isRecordExist == 1:
+                    self.__frame.forget()
+                    self.__frame1Config()
+                else:
+                    messagebox.showwarning("Can't Sign In", "Sai ID hoặc PW")
+        else:
+            messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
+
+    def __frame1Config(self):
+        self.__frame1.pack()
+        frame = Frame(self.__frame1)
+        Label(frame, text="Add face", font=("Arial", 20, "bold")).grid(
+            row=0, column=0, columnspan=2
+        )
+        Label(frame, text="ID SV:", font=("Arial", 20, "bold")).grid(row=1, column=0)
+        etr = Entry(frame, font=("Arial", 20), justify="right")
+        etr.grid(row=1, column=1)
+        frame.place(x=100, y=120)
+        Button(
+            self.__frame1,
+            text="Submit",
+            fg="green",
+            font=("Arial", 20, "bold"),
+            command=lambda: self.__getInfo(etr),
+        ).place(x=330, y=230)
+
+        Button(
+            self.__frame1,
+            text="Logout",
+            fg="red",
+            font=("Arial", 20, "bold"),
+            command=self.__Logout,
+        ).place(x=145, y=230)
+
+        Button(
+            self.__frame1,
+            text="Add new student info",
+            fg="Orange",
+            font=("Arial", 20, "bold"),
+            command=self.__addStudent,
+        ).place(x=145, y=290)
+
+        Button(
+            self.__frame1,
+            text="My class",
+            fg="Purple",
+            font=("Arial", 20, "bold"),
+            command=self.__addStudent,
+        ).place(x=230, y=360)
+
+    def __Logout(self):
+        self.__frame1.forget()
+        self.__frameConfig()
+
+    def __getInfo(self, etr):
+        connection = False
+        try:
+            if not ConnectionCheck.internet_on():
+                raise Exception
+            else:
+                connection = True
+        except Exception:
+            messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
+        if connection == True:
+            self.__id = etr.get()
+
+            if self.__id == "":
+                messagebox.showwarning("Can't Sign In", "Tài khoản không được để trống")
             else:
                 connect = sqlite3.connect(
                     os.path.join(os.getcwd(), r"database/database.db")
@@ -75,7 +156,7 @@ class MyGui:
 
                 isRecordExist = 0
                 for row in cursor:
-                    if int(self.__id) == int(row[0]) and int(pw) == int(row[1]):
+                    if int(self.__id) == int(row[0]):
                         isRecordExist = 1
 
                 if isRecordExist == 1:
@@ -95,7 +176,7 @@ class MyGui:
                     self.__getData()
                 else:
                     messagebox.showwarning(
-                        "Can't Sign In", "Sai tài khoản hoặc mật khẩu"
+                        "Can't Sign In", "Sai ID hoặc không có trong hệ thống"
                     )
         else:
             messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
@@ -176,7 +257,7 @@ class MyGui:
                 os.mkdir("recognizer")
             firebase.dowload()
 
-        recognizer.read(r"recognizer\trainingData.yml")
+        recognizer.read("recognizer\\trainingData.yml")
         path = "dataSet"
         ImgPaths = [
             os.path.join(path, i)
@@ -193,7 +274,7 @@ class MyGui:
         recognizer.save(r"recognizer\trainingData.yml")
         messagebox.showinfo("Done", "Training data success")
         self.__frame3.forget()
-        self.__Config()
+        self.__frame1Config()
 
     def __addStudent(self):
         try:
@@ -203,7 +284,7 @@ class MyGui:
                 self.__frame1.forget()
                 self.__addFrame = Addstudent.MyFrame(self.__master)
                 self.__addFrame.pack()
-                self.__Config()
+                self.__frame1Config()
         except:
             messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
 
@@ -243,6 +324,7 @@ def main():
 
 if __name__ == "__main__":
     thr1 = threading.Thread(name="Thread-1", target=dowloadDTB)
+    # Tạm thời tắt
     thr2 = threading.Thread(name="Thread-2", target=dowloadTN)
     thr1.start()
     thr2.start()
