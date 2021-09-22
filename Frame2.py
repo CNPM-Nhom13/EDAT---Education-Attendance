@@ -1,7 +1,6 @@
-import sqlite3
+import sqlite3, os, Frame1, MyMainException
 from tkinter import Frame, Tk, Button, Label, Entry, ttk, messagebox
 from PIL import Image, ImageTk
-import os, Frame1
 
 
 class Frame2:
@@ -273,6 +272,7 @@ class Frame2:
     def __modifyInfo(self, lst, frame3):
         try:
             slst = [i.get() for i in lst]
+            MyMainException.checkInfo(slst)
             connect = sqlite3.connect(
                 os.path.join(os.getcwd(), r"database\database.db")
             )
@@ -292,6 +292,14 @@ class Frame2:
             connect.close()
             messagebox.showinfo("Done", "Chỉnh sửa thông tin thành công")
             frame3.forget()
+        except (
+            MyMainException.NameException,
+            MyMainException.GenderException,
+            MyMainException.SDTException,
+            MyMainException.FolkException,
+            MyMainException.AddressException,
+        ) as e:
+            e.warning()
         except Exception:
             messagebox.showwarning("Error", "Chỉnh sửa thông tin thất bại")
 

@@ -1,8 +1,6 @@
 from tkinter import Entry, Frame, Tk, Label, Button, Checkbutton, messagebox
-import os, Frame2, urllib, sqlite3
-from tkinter.constants import LEFT, RIGHT
+import os, Frame2, urllib, sqlite3, urllib.request, urllib.error, MyMainException
 from PIL import Image, ImageTk
-import urllib.request, urllib.error
 
 MyID = None
 MyMajor = None
@@ -45,7 +43,7 @@ class Frame1:
         Label(self.__frame1, text="Tên đăng nhập:", font=("Arial", 15, "bold")).place(
             x=600, y=120
         )
-        entry1 = Entry(self.__frame1, width=20, font=("Arial", 20), justify=RIGHT)
+        entry1 = Entry(self.__frame1, width=20, font=("Arial", 20), justify="right")
         entry1.place(x=600, y=150)
 
         Label(
@@ -54,7 +52,7 @@ class Frame1:
             font=("Arial", 15, "bold"),
         ).place(x=600, y=220)
         entry2 = Entry(
-            self.__frame1, width=20, font=("Arial", 20), show="*", justify=RIGHT
+            self.__frame1, width=20, font=("Arial", 20), show="*", justify="right"
         )
         entry2.place(x=600, y=250)
         return entry1, entry2
@@ -76,12 +74,10 @@ class Frame1:
         if self.__checkConnection() == False:
             messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
         else:
-            id, pw = etr1.get(), etr2.get()
-            if id == "" or pw == "":
-                messagebox.showwarning(
-                    "Error", "Tài khoản và mật khẩu không được để trống"
-                )
-            else:
+            try:
+                id, pw = etr1.get(), etr2.get()
+                MyMainException.checkID(id)
+                MyMainException.checkPW(pw)
                 global MyID, MyMajor
                 MyID = id
                 connect = sqlite3.connect(
@@ -103,6 +99,10 @@ class Frame1:
                     )
                 connect.commit()
                 connect.close()
+            except (MyMainException.IDException, MyMainException.PWException) as e:
+                e.warning()
+            except Exception:
+                messagebox.showwarning("Error", "Đăng nhập không thành công")
 
     def __FaceSignIn(self):
         pass

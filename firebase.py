@@ -12,8 +12,17 @@ config = {
     "measurementId": "G-1BKR6BV3NM",
 }
 
+config_a = {
+    "apiKey": "AIzaSyCb_ge32xry68dj8yHLcVD8bvTSsBYJR3Q",
+    "authDomain": "htnam-72b75.firebaseapp.com",
+    "databaseURL": "htnam-72b75.firebaseapp.com",
+    "projectId": "htnam-72b75",
+    "storageBucket": "htnam-72b75.appspot.com",
+    "messagingSenderId": "264425807306",
+    "appId": "1:264425807306:web:e5a50cd02888d3e655c333",
+}
 
-firebase = pyrebase.initialize_app(config)
+firebase = pyrebase.initialize_app(config_a)
 storage = firebase.storage()
 
 dtbLocalPath = dtbCloudPath = "database/database.db"
