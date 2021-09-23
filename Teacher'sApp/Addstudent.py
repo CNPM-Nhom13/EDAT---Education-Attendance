@@ -22,7 +22,7 @@ class MyFrame:
             text="Cancel",
             fg="Red",
             font=("Arial", 20, "bold"),
-            command=self.__cancel,
+            command=self.forget,
         ).place(x=340, y=400)
         self.__FrConfig()
 
@@ -212,7 +212,7 @@ class MyFrame:
         ) as e:
             e.warning()
 
-    def __cancel(self):
+    def forget(self):
         self.__mainframe.forget()
 
     def pack(self):

@@ -1,4 +1,4 @@
-import threading, cv2, os, sqlite3, shutil, firebase, ConnectionCheck, time, Addstudent
+import threading, cv2, os, sqlite3, shutil, firebase, ConnectionCheck, time, Addstudent, ViewMyClass
 from tkinter import Entry, Frame, Tk, Button, Label, Toplevel, ttk, messagebox
 from PIL import Image, ImageTk
 import numpy as np
@@ -126,7 +126,7 @@ class MyGui:
             text="My class",
             fg="Purple",
             font=("Arial", 20, "bold"),
-            command=self.__addStudent,
+            command=self.__MyClass,
         ).place(x=230, y=360)
 
     def __Logout(self):
@@ -287,6 +287,10 @@ class MyGui:
                 self.__frame1Config()
         except:
             messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
+
+    def __MyClass(self):
+        self.__frame4 = ViewMyClass.MyFrame1(self.__frame1)
+        self.__frame4.pack()
 
 
 def dowloadDTB():
