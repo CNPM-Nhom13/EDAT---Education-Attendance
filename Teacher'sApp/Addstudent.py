@@ -1,5 +1,7 @@
 from tkinter import Tk, Frame, Label, Button, Entry, messagebox, ttk
-import sqlite3, os, MyException
+import sqlite3, os, MyException, firebase
+
+from pyrebase.pyrebase import Firebase
 
 
 class MyFrame:
@@ -191,7 +193,7 @@ class MyFrame:
                     + str(lstInfo[10])
                     + "')"
                 )
-
+                firebase.uploadDatabase()
             elif isRecordExists == 1:
                 messagebox.showwarning("Warning", "ID đã có người sử dụng")
             self.__connect.commit()

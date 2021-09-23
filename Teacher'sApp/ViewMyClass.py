@@ -1,10 +1,11 @@
 from tkinter import Tk, Frame, Label, Button, Entry, messagebox, ttk
-import sqlite3, firebase
+import sqlite3, firebase, threading
 
 
 class MyFrame1:
     def __init__(self, master):
         self.__master = master
+        self.__SvTime = tuple("0" for i in range(8))
         self.__frame = Frame(self.__master, width=600, height=520)
         self.__connect = sqlite3.connect(r"database\database.db")
         cursor = self.__connect.execute("SELECT * FROM people")
@@ -82,10 +83,28 @@ class MyFrame1:
             Label(self.__frame1, text=self.__lstsv[q][2], font=("Arial", 15)).grid(
                 row=q + 2, column=2
             )
-            Label(self.__frame1, text=str("null"), font=("Arial", 15)).grid(
-                row=q + 2, column=3
-            )
-        self.__frame1.after(1000, self.__frame1Config)
+            Label(
+                self.__frame1,
+                text=str(0),
+                font=("Arial", 15),
+            ).grid(row=q + 2, column=3)
+        self.__frame1.after(3000, self.__updateTime)
+
+    def __updateTime(self):
+        thr1 = threading.Thread(name=("Thr1"), target=self.__getSvTime)
+        thr1.start()
+        for q in range(len(self.__SvTime)):
+            Label(
+                self.__frame1,
+                text=str(self.__SvTime[q]),
+                font=("Arial", 15),
+            ).grid(row=q + 2, column=3)
+        self.__frame1.after(5000, self.__updateTime)
+
+    def __getSvTime(self):
+        self.__SvTime = tuple(
+            firebase.getTime(self.__lstsv[i][0]) for i in range(len(self.__lstsv))
+        )
 
     def __table(self):
         for q in range(len(self.__lstsv) + 1):

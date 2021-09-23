@@ -330,6 +330,9 @@ if __name__ == "__main__":
     thr1 = threading.Thread(name="Thread-1", target=dowloadDTB)
     # Tạm thời tắt
     thr2 = threading.Thread(name="Thread-2", target=dowloadTN)
+    thr3 = threading.Thread(name="Thread-3", target=firebase.config)
+
     thr1.start()
     thr2.start()
+    thr3.start()
     main()
