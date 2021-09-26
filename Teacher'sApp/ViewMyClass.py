@@ -71,6 +71,7 @@ class MyFrame1:
         self.__frame1Config()
 
     def __stop(self):
+        threading.Thread(target=firebase.config).start()
         self.__frame1.place_forget()
         self.__sto.place_forget()
         self.__sta = Button(
@@ -129,6 +130,11 @@ class MyFrame1:
         elif self.__cbb.get() == "Offline":
             tp = self.__SVOff
         for q in range(len(tp)):
+            Label(
+                self.__frame1,
+                text="     ",
+                font=("Arial", 15),
+            ).grid(row=q + 2, column=3)
             Label(
                 self.__frame1,
                 text=str(tp[q]),
@@ -211,8 +217,9 @@ class MyFrame1:
     def pack(self):
         self.__frame.pack()
 
-'''
+
+"""
 root = Tk()
 mf = MyFrame1(root)
 root.mainloop()
-'''
+"""
