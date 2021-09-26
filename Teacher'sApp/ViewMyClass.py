@@ -211,7 +211,8 @@ class MyFrame1:
     def pack(self):
         self.__frame.pack()
 
-
+'''
 root = Tk()
 mf = MyFrame1(root)
 root.mainloop()
+'''
