@@ -15,13 +15,13 @@ class MyGui:
         self.__Config()
 
     def __Config(self):
-        self.__master.geometry("600x520")
+        self.__master.geometry("620x520")
         self.__master.title("EDAT for teacher")
         self.__master.resizable(False, False)
 
-        self.__frame = Frame(self.__master, width=600, height=520)
+        self.__frame = Frame(self.__master, width=620, height=520)
         self.__frameConfig()
-        self.__frame1 = Frame(self.__master, width=600, height=520)
+        self.__frame1 = Frame(self.__master, width=620, height=520)
 
     def __frameConfig(self):
         self.__frame.pack()
@@ -211,7 +211,7 @@ class MyGui:
                 r"dataSet\User." + str(self.__id) + "." + str(self.__temp) + ".jpg",
                 gray[y : y + h, x : x + w],
             )
-        if self.__temp >= 100:
+        if self.__temp >= 50:
             self.__temp = 0
             messagebox.showinfo("Get Info Done", "Lấy dữ liệu thành công")
         else:
@@ -242,7 +242,7 @@ class MyGui:
             fg="Green",
             font=("Arial", 15, "bold"),
             command=lambda: self.__prgbar(mpgb, thr2),
-        ).place(x=200, y=300)
+        ).place(x=215, y=300)
         self.__frame3.pack(fill="both", expand=1)
 
     def __trainingData1(self):
@@ -290,7 +290,7 @@ class MyGui:
 
     def __MyClass(self):
         self.__frame4 = ViewMyClass.MyFrame1(self.__frame1)
-        self.__frame4.pack()
+        # self.__frame4.pack()
 
 
 def dowloadDTB():

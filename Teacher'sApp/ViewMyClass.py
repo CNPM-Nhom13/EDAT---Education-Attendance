@@ -1,11 +1,13 @@
 import time
-from tkinter import Tk, Frame, Label, Button, Canvas, messagebox, ttk
+from tkinter import Tk, Frame, Label, Button, Canvas, Toplevel, messagebox, ttk
 import sqlite3, firebase, threading
 
 
 class MyFrame1:
     def __init__(self, master):
-        self.__master = master
+        self.__master = Toplevel(master)
+        self.__master.geometry("620x520")
+        self.__master.resizable(False, False)
         self.__SvTime = tuple("0" for i in range(8))
         self.__SVOn = tuple()
         self.__SVOff = tuple()
@@ -41,7 +43,7 @@ class MyFrame1:
             text="Back",
             font=("Arial", 20, "bold"),
             fg="orange",
-            command=self.__frame.forget,
+            command=self.__master.destroy,
         ).place(x=250, y=465)
 
         thr1 = threading.Thread(name=("Thr1"), target=self.__getSvTime)
@@ -162,17 +164,26 @@ class MyFrame1:
             else len(self.__SvTime)
         )
         if cbb != self.__cbb.get() or i != a:
+            # self.__frame1.pack_forget()
             self.__myCanvas.forget()
             # self.__frame1 = Frame(self.__frame, width=620, height=420)
             # self.__frame1.place(x=0, y=60)
             self.__canvasConfig()
+            # self.__frame1Config()
+            self.__myCanvas.update_idletasks()
         else:
             self.__frame1.after(3000, lambda: self.__updateTime(cbb, i))
 
     def __getSvTime(self):
-        self.__SvTime = tuple(
-            firebase.getTime(self.__lstsv[i][0]) for i in range(len(self.__lstsv))
-        )
+        try:
+            self.__SvTime = tuple(
+                firebase.getTime(self.__lstsv[i][0]) for i in range(len(self.__lstsv))
+            )
+        except:
+            firebase.config()
+            self.__SvTime = tuple(
+                firebase.getTime(self.__lstsv[i][0]) for i in range(len(self.__lstsv))
+            )
         self.__SVOn = tuple(i for i in self.__SvTime if int(i) > 0)
         self.__SVOff = tuple(i for i in self.__SvTime if int(i) == 0)
 
@@ -233,8 +244,5 @@ class MyFrame1:
 
 
 """root = Tk()
-root.geometry("620x520")
-root.resizable(False, False)
 mf = MyFrame1(root)
-root.mainloop()
-"""
+root.mainloop()"""
