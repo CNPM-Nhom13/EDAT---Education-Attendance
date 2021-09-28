@@ -1,5 +1,5 @@
 import time
-from tkinter import Tk, Frame, Label, Button, Entry, messagebox, ttk
+from tkinter import Tk, Frame, Label, Button, Canvas, messagebox, ttk
 import sqlite3, firebase, threading
 
 
@@ -10,7 +10,7 @@ class MyFrame1:
         self.__SVOn = tuple()
         self.__SVOff = tuple()
         self.__status = "All"
-        self.__frame = Frame(self.__master, width=600, height=520)
+        self.__frame = Frame(self.__master, width=620, height=220)
         self.__connect = sqlite3.connect(r"database\database.db")
         cursor = self.__connect.execute("SELECT * FROM people")
         self.__lstsv = [i for i in cursor]
@@ -19,7 +19,7 @@ class MyFrame1:
         self.__connect.close()
 
     def __frameConfig(self):
-        self.__frame.pack()
+        self.__frame.pack(fill="both", expand=1)
 
         self.__sta = Button(
             self.__frame,
@@ -52,8 +52,11 @@ class MyFrame1:
             self.__frame, values=options, font=("Arial", 20), width=6, foreground="blue"
         )
         self.__cbb.current(0)
-        self.__cbb.place(x=475, y=0)
+        self.__cbb.place(x=460, y=0)
         self.__getStatus()
+
+        self.__scr = ttk.Scrollbar(self.__frame, orient="vertical")
+        self.__scr.pack(side="right", fill="y")
 
     def __start(self):
         self.__sta.place_forget()
@@ -66,13 +69,11 @@ class MyFrame1:
         )
         self.__sto.place(x=200, y=0)
 
-        self.__frame1 = Frame(self.__frame, width=600, height=420)
-        self.__frame1.place(x=0, y=60)
-        self.__frame1Config()
+        self.__canvasConfig()
 
     def __stop(self):
         threading.Thread(target=firebase.config).start()
-        self.__frame1.place_forget()
+        self.__myCanvas.forget()
         self.__sto.place_forget()
         self.__sta = Button(
             self.__frame,
@@ -82,6 +83,19 @@ class MyFrame1:
             command=self.__start,
         )
         self.__sta.place(x=200, y=0)
+
+    def __canvasConfig(self):
+        self.__myCanvas = Canvas(self.__frame, width=600, height=420)
+        self.__scr.config(command=self.__myCanvas.yview)
+        self.__myCanvas.config(yscrollcommand=self.__scr.set)
+        self.__myCanvas.bind(
+            "<Configure>",
+            lambda a: self.__myCanvas.config(scrollregion=self.__myCanvas.bbox("all")),
+        )
+        self.__myCanvas.pack(side="left", pady=70)
+        self.__frame1 = Frame(self.__myCanvas)
+        self.__myCanvas.create_window((0, 0), window=self.__frame1, anchor="nw")
+        self.__frame1Config()
 
     def __frame1Config(self):
         Label(
@@ -148,10 +162,10 @@ class MyFrame1:
             else len(self.__SvTime)
         )
         if cbb != self.__cbb.get() or i != a:
-            self.__frame1.place_forget()
-            self.__frame1 = Frame(self.__frame, width=600, height=420)
-            self.__frame1.place(x=0, y=60)
-            self.__frame1Config()
+            self.__myCanvas.forget()
+            # self.__frame1 = Frame(self.__frame, width=620, height=420)
+            # self.__frame1.place(x=0, y=60)
+            self.__canvasConfig()
         else:
             self.__frame1.after(3000, lambda: self.__updateTime(cbb, i))
 
@@ -218,8 +232,9 @@ class MyFrame1:
         self.__frame.pack()
 
 
-"""
-root = Tk()
+"""root = Tk()
+root.geometry("620x520")
+root.resizable(False, False)
 mf = MyFrame1(root)
 root.mainloop()
 """
