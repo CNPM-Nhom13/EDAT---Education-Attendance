@@ -33,7 +33,7 @@ configDatabase = {
     "measurementId": "G-1BKR6BV3NM",
 }
 
-firebase = pyrebase.initialize_app(config_a)
+firebase = pyrebase.initialize_app(config)
 storage = firebase.storage()
 database = pyrebase.initialize_app(configDatabase).database()
 
