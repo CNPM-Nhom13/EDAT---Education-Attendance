@@ -39,6 +39,15 @@ class Frame1:
             command=self.__FaceSignIn,
         ).place(x=615, y=420)
 
+        Button(
+            self.__frame1,
+            text="Quên mật khẩu",
+            font=("Arial", 10, "bold"),
+            fg="#009BFA",
+            command=self.__forgetPW,
+            borderwidth=0,
+        ).place(x=600, y=290)
+
     def __setEntry(self):
         Label(self.__frame1, text="Tên đăng nhập:", font=("Arial", 15, "bold")).place(
             x=600, y=120
@@ -104,6 +113,12 @@ class Frame1:
             except Exception:
                 messagebox.showwarning("Error", "Đăng nhập không thành công")
 
+    def __forgetPW(self):
+        messagebox.showinfo(
+            "Forgot Password",
+            "Bạn hãy liên hệ với văn phòng khoa để được cấp lại mật khẩu",
+        )
+
     def __FaceSignIn(self):
         pass
 
@@ -111,8 +126,6 @@ class Frame1:
         self.__frame1.destroy()
 
 
-"""
-root = Tk()
+"""root = Tk()
 mg = Frame1(root)
-root.mainloop()
-"""
+root.mainloop()"""
