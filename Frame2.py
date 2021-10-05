@@ -16,9 +16,13 @@ class Frame2:
         img = ImageTk.PhotoImage(
             file=os.path.join(os.getcwd(), r"resource\bgframe2.png")
         )
+        Tlg = ImageTk.PhotoImage(file=os.path.join(os.getcwd(), r"resource\tlogo.png"))
         bg = Label(self.__frame2, image=img)
         bg.image_names = img
         bg.place(x=-2, y=0)
+        tlabel = Label(self.__frame2, image=Tlg)
+        tlabel.image_names = Tlg
+        tlabel.place(x=8, y=8)
 
         Button(
             self.__frame2,
