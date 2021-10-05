@@ -131,7 +131,7 @@ class AddressException(Exception):
             messagebox.showwarning("Error", "Địa chỉ không được để trống")
         elif len(self.__add) > 100:
             messagebox.showwarning("Error", "Địa chỉ không được dài quá 100 kí tự")
-        elif not "".join(self.__add.split()).isalpha():
+        elif not "".join(self.__add.split()).isalnum():
             messagebox.showwarning(
                 "Error", "Địa chỉ không được chứa số hoặc kí tự đặc biệt"
             )
@@ -205,7 +205,7 @@ def checkAddress(address):
     if (
         len(address) == 0
         or len(address) > 100
-        and not "".join(address.split()).isalpha()
+        or not "".join(address.split()).isalnum()
     ):
         raise AddressException(address)
 
