@@ -131,7 +131,7 @@ class AddressException(Exception):
             messagebox.showwarning("Error", "Địa chỉ không được để trống")
         elif len(self.__add) > 100:
             messagebox.showwarning("Error", "Địa chỉ không được dài quá 100 kí tự")
-        elif not "".join(self.__add.split()).isalpha():
+        elif not "".join(self.__add.split()).isalnum():
             messagebox.showwarning(
                 "Error", "Địa chỉ không được chứa số hoặc kí tự đặc biệt"
             )
@@ -192,12 +192,12 @@ def checkClass(mclass):
 
 
 def checkMajor(major):
-    if len(major) == 0 or len(major) > 70 and not "".join(major.split()).isalpha():
+    if len(major) == 0 or len(major) > 70 or not "".join(major.split()).isalpha():
         raise MajorException(major)
 
 
 def checkFolk(folk):
-    if len(folk) == 0 or len(folk) > 25 and not "".join(folk.split()).isalpha():
+    if len(folk) == 0 or len(folk) > 25 or not "".join(folk.split()).isalpha():
         raise FolkException(folk)
 
 
@@ -205,7 +205,7 @@ def checkAddress(address):
     if (
         len(address) == 0
         or len(address) > 100
-        and not "".join(address.split()).isalpha()
+        or not "".join(address.split()).isalpha()
     ):
         raise AddressException(address)
 

@@ -192,12 +192,12 @@ def checkClass(mclass):
 
 
 def checkMajor(major):
-    if len(major) == 0 or len(major) > 70 and not "".join(major.split()).isalpha():
+    if len(major) == 0 or len(major) > 70 or not "".join(major.split()).isalpha():
         raise MajorException(major)
 
 
 def checkFolk(folk):
-    if len(folk) == 0 or len(folk) > 25 and not "".join(folk.split()).isalpha():
+    if len(folk) == 0 or len(folk) > 25 or not "".join(folk.split()).isalpha():
         raise FolkException(folk)
 
 
