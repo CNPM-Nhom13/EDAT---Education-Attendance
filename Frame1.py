@@ -1,5 +1,5 @@
-from tkinter import Entry, Frame, Tk, Label, Button, Checkbutton, messagebox
-import os, Frame2, urllib, sqlite3, urllib.request, urllib.error, MyMainException
+from tkinter import Entry, Frame, Tk, Label, Button, Checkbutton, Toplevel, messagebox
+import cv2, os, Frame2, urllib, sqlite3, urllib.request, urllib.error, MyMainException
 from PIL import Image, ImageTk
 
 MyID = None
@@ -84,9 +84,14 @@ class Frame1:
             messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
         else:
             try:
-                id, pw = etr1.get(), etr2.get()
-                MyMainException.checkID(id)
-                MyMainException.checkPW(pw)
+                if type(etr1) == type("a"):
+                    id, pw = etr1, etr2
+                    MyMainException.checkID(id)
+                else:
+                    id, pw = etr1.get(), etr2.get()
+                    MyMainException.checkID(id)
+                    MyMainException.checkPW(pw)
+
                 global MyID, MyMajor
                 MyID = id
                 connect = sqlite3.connect(
@@ -94,10 +99,13 @@ class Frame1:
                 )
                 cursor = connect.execute("SELECT * FROM people WHERE ID=" + str(id))
                 isRecordExist = 0
-                for row in cursor:
-                    if str(id) == str(row[0]) and str(pw) == str(row[1]):
-                        isRecordExist = 1
-                        MyMajor = row[7]
+                if pw != "PASS":
+                    for row in cursor:
+                        if str(id) == str(row[0]) and str(pw) == str(row[1]):
+                            isRecordExist = 1
+                            MyMajor = row[7]
+                else:
+                    isRecordExist = 1
                 if isRecordExist == 1:
                     self.__frame1.forget()
                     self.__frame2 = Frame2.Frame2(self.__master)
@@ -110,8 +118,8 @@ class Frame1:
                 connect.close()
             except (MyMainException.IDException, MyMainException.PWException) as e:
                 e.warning()
-            except Exception:
-                messagebox.showwarning("Error", "Đăng nhập không thành công")
+            # except Exception:
+            #    messagebox.showwarning("Error", "Đăng nhập không thành công")
 
     def __forgetPW(self):
         messagebox.showinfo(
@@ -120,7 +128,48 @@ class Frame1:
         )
 
     def __FaceSignIn(self):
-        pass
+        # tl = Toplevel(self.__frame1)
+        # tl.geometry("300x300")
+        lst = [0]
+        face_cascade = cv2.CascadeClassifier(
+            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+        )
+        recognizer = cv2.face.LBPHFaceRecognizer_create()
+        recognizer.read(os.path.join(os.getcwd(), r"recognizer/trainingData.yml"))
+        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        while True:
+            _, frame = cap.read()
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            face = face_cascade.detectMultiScale(gray)
+            for (x, y, w, h) in face:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                roi_gray = gray[y : y + h, x : x + w]
+                id, tl = recognizer.predict(roi_gray)
+                if tl < 80:
+                    cv2.putText(
+                        frame,
+                        str(id),
+                        (x + 10, y - 10),
+                        cv2.FONT_HERSHEY_PLAIN,
+                        1,
+                        (0, 0, 255),
+                        2,
+                    )
+                    lst.append(str(id))
+                else:
+                    lst.append(str(0))
+            cv2.imshow("Detecting Face", frame)
+            idn = max(lst, key=lst.count)
+            if cv2.waitKey(1) & lst.count(idn) == 30 or len(lst) > 50:
+                break
+        cv2.destroyAllWindows()
+        if idn == "0":
+            messagebox.showwarning(
+                "Error",
+                "\tĐăng nhập không thành công\nKhông có dữ liệu nhận dạng khuôn mặt hoặc tài khoản",
+            )
+        else:
+            self.__SignIn(idn, "PASS")
 
     def __Reset(self):
         self.__frame1.destroy()
