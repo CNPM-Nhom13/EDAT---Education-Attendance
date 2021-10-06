@@ -1,6 +1,5 @@
 import pyrebase, os
 
-
 config = {
     "apiKey": "AIzaSyB_LH8lyCg4bdgUHZhsmeyNmUtOjoB22mA",
     "authDomain": "qlsv-ea25d.firebaseapp.com",
@@ -33,7 +32,12 @@ configDatabase = {
     "measurementId": "G-1BKR6BV3NM",
 }
 
-firebase = pyrebase.initialize_app(config)
+try:
+    firebase = pyrebase.initialize_app(config)
+    firebase.storage().child("text.txt").put(os.path.join(os.getcwd(), "test.txt"))
+except:
+    firebase = pyrebase.initialize_app(config_a)
+
 storage = firebase.storage()
 database = pyrebase.initialize_app(configDatabase).database()
 
