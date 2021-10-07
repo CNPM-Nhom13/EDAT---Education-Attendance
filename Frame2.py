@@ -43,6 +43,7 @@ class Frame2:
             height=50,
             image=imgbt,
             compound="center",
+            command=self.__Attendance,
         )
         bt1.image_names = imgbt
         bt1.place(x=10, y=243)
@@ -103,12 +104,14 @@ class Frame2:
         self.__frame2.pack(fill="both", expand=1)
 
     def __SignOut(self):
+        self.__master.unbind("<Return>")
         Frame1.MyID = None
         self.__frame2.forget()
         self.__frame1 = Frame1.Frame1(self.__master)
         self.__frame1.pack()
 
     def __showInfo(self):
+        self.__master.unbind("<Return>")
         connect = sqlite3.connect(os.path.join(os.getcwd(), r"database\database.db"))
         self.__cursor = connect.execute(
             "SELECT * FROM people WHERE ID=" + str(Frame1.MyID)
@@ -223,6 +226,7 @@ class Frame2:
         connect.close()
 
     def __ctdt(self):
+        self.__master.unbind("<Return>")
         mj = (
             "cntt"
             if Frame1.MyMajor == "Công Nghệ Thông Tin"
@@ -262,6 +266,7 @@ class Frame2:
 
         lst = [etrName, etrGender, etrSDT, etrFolk, etrAddress]
 
+        self.__master.bind("<Return>", lambda e: self.__modifyInfo(lst, frame3))
         Button(
             frame3,
             text="Submit",
@@ -307,5 +312,10 @@ class Frame2:
         except Exception:
             messagebox.showwarning("Error", "Chỉnh sửa thông tin thất bại")
 
+    def __Attendance(self):
+        self.__master.unbind("<Return>")
+        self.__config()
+
     def __CommingSoon(self):
+        self.__master.unbind("<Return>")
         self.__config()

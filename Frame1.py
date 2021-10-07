@@ -2,8 +2,7 @@ from tkinter import Entry, Frame, Tk, Label, Button, Checkbutton, Toplevel, mess
 import cv2, os, Frame2, urllib, sqlite3, urllib.request, urllib.error, MyMainException
 from PIL import Image, ImageTk
 
-MyID = None
-MyMajor = None
+MyID = MyMajor = None
 
 
 class Frame1:
@@ -14,6 +13,7 @@ class Frame1:
         self.__frame1.pack(fill="both", expand=1)
 
     def __GUIconfig(self):
+        NowFrame = "1"
         img = ImageTk.PhotoImage(file=os.path.join(os.getcwd(), "resource\logo1.png"))
         self.__master.title("EDAT | Thuy Loi University")
         self.__master.geometry("1000x600")
@@ -23,6 +23,7 @@ class Frame1:
         label.image_names = img
         label.place(x=-2, y=0)
         etr1, etr2 = self.__setEntry()
+        self.__master.bind("<Return>", lambda e: self.__SignIn(etr1, etr2))
         Button(
             self.__frame1,
             text="Đăng nhập",
@@ -107,6 +108,7 @@ class Frame1:
                 else:
                     isRecordExist = 1
                 if isRecordExist == 1:
+                    self.__master.unbind("<Return>")
                     self.__frame1.forget()
                     self.__frame2 = Frame2.Frame2(self.__master)
                     self.__frame2.pack()
