@@ -37,6 +37,7 @@ class MyGui:
         etr2 = Entry(self.__frame, font=("Arial", 20), width=10, justify="right")
         etr2.place(x=275, y=230)
 
+        self.__master.bind("<Return>", lambda e: self.__signIn(etr1, etr2))
         Button(
             self.__frame,
             text="Submit",
@@ -65,11 +66,13 @@ class MyGui:
         if connection == True:
             id, pw = etr1.get(), etr2.get()
 
-            if self.__id == "":
-                messagebox.showwarning("Can't Sign In", "Tài khoản không được để trống")
+            if id == "" or pw == "":
+                messagebox.showwarning(
+                    "Can't Sign In", "Tài khoản hoặc mật khẩu không được để trống"
+                )
             else:
                 connect = sqlite3.connect(
-                    os.path.join(os.getcwd(), r"database/database.db")
+                    os.path.join(os.getcwd(), r"database\database.db")
                 )
                 query = "SELECT * FROM teacher WHERE ID=" + str(id)
                 cursor = connect.execute(query)
@@ -80,6 +83,7 @@ class MyGui:
                         isRecordExist = 1
 
                 if isRecordExist == 1:
+                    self.__master.unbind("<Return>")
                     self.__frame.forget()
                     self.__frame1Config()
                 else:
@@ -97,6 +101,7 @@ class MyGui:
         etr = Entry(frame, font=("Arial", 20), justify="right")
         etr.grid(row=1, column=1)
         frame.place(x=100, y=120)
+        self.__master.bind("<Return>", lambda e: self.__getInfo(etr))
         Button(
             self.__frame1,
             text="Submit",
@@ -172,7 +177,7 @@ class MyGui:
                         font=("Arial", 15, "bold"),
                         command=self.__trainingData,
                     ).pack()
-
+                    self.__master.unbind("<Return>")
                     self.__getData()
                 else:
                     messagebox.showwarning(
@@ -246,35 +251,35 @@ class MyGui:
         self.__frame3.pack(fill="both", expand=1)
 
     def __trainingData1(self):
-        recognizer = cv2.face.LBPHFaceRecognizer_create()
         try:
+            recognizer = cv2.face.LBPHFaceRecognizer_create()
+
+            recognizer.read(os.getcwd() + r"\recognizer\trainingData.yml")
+            path = "dataSet"
+            ImgPaths = [
+                os.path.join(path, i)
+                for i in os.listdir(path)
+                if i.startswith("User." + str(self.__id) + ".")
+            ]
+            faces, id = [], []
+            for ImgPath in ImgPaths:
+                faceNp = np.array(Image.open(ImgPath).convert("L"), "uint8")
+                faces.append(faceNp)
+                id.append(int(ImgPath.split(".")[1]))
+
+            recognizer.update(faces, np.array(id))
+            recognizer.save(r"recognizer\trainingData.yml")
+            messagebox.showinfo("Done", "Training data success")
+            self.__frame3.forget()
+            self.__frame1Config()
+        except:
             if os.path.exists("recognizer"):
                 shutil.rmtree("recognizer")
-        except:
-            pass
-        if not os.path.exists(r"recognizer\trainingData.yml"):
-            if not os.path.exists("recognizer"):
-                os.mkdir("recognizer")
-            firebase.dowload()
-
-        recognizer.read("recognizer\\trainingData.yml")
-        path = "dataSet"
-        ImgPaths = [
-            os.path.join(path, i)
-            for i in os.listdir(path)
-            if i.startswith("User." + str(self.__id) + ".")
-        ]
-        faces, id = [], []
-        for ImgPath in ImgPaths:
-            faceNp = np.array(Image.open(ImgPath).convert("L"), "uint8")
-            faces.append(faceNp)
-            id.append(int(ImgPath.split(".")[1]))
-
-        recognizer.update(faces, np.array(id))
-        recognizer.save(r"recognizer\trainingData.yml")
-        messagebox.showinfo("Done", "Training data success")
-        self.__frame3.forget()
-        self.__frame1Config()
+            if not os.path.exists(os.getcwd() + r"\recognizer\trainingData.yml"):
+                if not os.path.exists("recognizer"):
+                    os.mkdir("recognizer")
+                    firebase.dowload()
+            self.__trainingData1()
 
     def __addStudent(self):
         try:

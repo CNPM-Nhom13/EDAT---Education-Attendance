@@ -1,12 +1,15 @@
-import sqlite3, os, Frame1, MyMainException
+import sqlite3, os, Frame1, MyMainException, cv2, time, firebase, threading
 from tkinter import Frame, Tk, Button, Label, Entry, ttk, messagebox
 from PIL import Image, ImageTk
+
+onlTime = 0
 
 
 class Frame2:
     def __init__(self, master):
         self.__master = master
         self.__frame2 = Frame(master)
+        self.testApp()
         self.__config()
 
     def forget(self):
@@ -313,9 +316,100 @@ class Frame2:
             messagebox.showwarning("Error", "Chỉnh sửa thông tin thất bại")
 
     def __Attendance(self):
+        global onlTime
+        self.__startime = self.__endtime = onlTime + time.time()
         self.__master.unbind("<Return>")
-        self.__config()
+        frame4 = Frame(self.__frame2, width=684, height=585)
+        frame4.place(x=310, y=10)
+        imgl = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\atlg1.jpg")
+        lb = Label(frame4, image=imgl)
+        lb.image_names = imgl
+        lb.place(x=0, y=0)
+        Button(
+            frame4,
+            text="Join",
+            font=("Arial", 15, "bold"),
+            fg="Green",
+            command=self.__joinClass,
+        ).place(x=300, y=265)
+
+    def __joinClass(self):
+        frame5 = Frame(self.__frame2, width=684, height=585, bg="White")
+        frame5.place(x=310, y=10)
+        lb = Label(frame5)
+        lb.place(x=20, y=0)
+        self.__camOn = 1
+        Button(
+            frame5,
+            text="Leave",
+            font=("Arial", 20, "bold"),
+            fg="Red",
+            command=self.__leaveClass,
+        ).place(x=290, y=500)
+
+        face_cascade = cv2.CascadeClassifier(
+            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+        )
+        recognizer = cv2.face.LBPHFaceRecognizer_create()
+        threading.Thread(
+            name="Thread-1",
+            target=recognizer.read(os.getcwd() + r"\recognizer\trainingData.yml"),
+        ).start()
+        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
+        self.__showFrame(lb, cap, face_cascade, recognizer)
+
+    def __showFrame(self, lb, cap, face_cascade, recognizer):
+        _, frame = cap.read()
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        face = face_cascade.detectMultiScale(gray)
+        for (x, y, w, h) in face:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            roi_gray = gray[y : y + h, x : x + w]
+            id, tl = recognizer.predict(roi_gray)
+            if tl < 85:
+                cv2.putText(
+                    frame,
+                    str(id),
+                    (x + 10, y - 10),
+                    cv2.FONT_HERSHEY_PLAIN,
+                    1,
+                    (0, 0, 255),
+                    2,
+                )
+        imgtk = ImageTk.PhotoImage(
+            Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        )
+        lb.config(image=imgtk)
+        lb.image_names = imgtk
+        global onlTime
+        t = self.__endtime - self.__startime + onlTime
+        if (round(t, 1) - 0.5) % 10 == 0 and t != 0:
+            threading.Thread(target=firebase.updateTime(Frame1.MyID, t)).start()
+        self.__endtime = onlTime + time.time()
+        if self.__camOn == 1:
+            lb.after(10, lambda: self.__showFrame(lb, cap, face_cascade, recognizer))
+
+    def __leaveClass(self):
+        global onlTime
+        onlTime = int(self.__endtime - self.__startime + onlTime)
+        self.__camOn = 0
+        cv2.destroyAllWindows()
+        self.__Attendance()
 
     def __CommingSoon(self):
         self.__master.unbind("<Return>")
         self.__config()
+
+    def testApp(self):
+        Frame1.MyID = 102
+        Frame1.MyMajor = "Công Nghệ Thông Tin"
+        self.__frame2.config(width=1000, height=600)
+        self.__frame2.pack()
+
+
+"""
+root = Tk()
+t = Frame2(root)
+root.mainloop()"""

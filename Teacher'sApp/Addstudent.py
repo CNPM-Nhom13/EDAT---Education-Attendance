@@ -12,6 +12,7 @@ class MyFrame:
             os.path.join(os.getcwd(), r"database/database.db")
         )
         self.__lst = []
+        self.__master.bind("<Return>", lambda e: self.__submit())
         Button(
             self.__mainframe,
             text="Submit",
@@ -198,6 +199,7 @@ class MyFrame:
                 messagebox.showwarning("Warning", "ID đã có người sử dụng")
             self.__connect.commit()
             self.__connect.close()
+            self.__master.unbind("<Return>")
             self.__mainframe.forget()
         except (
             MyException.IDException,
@@ -215,15 +217,14 @@ class MyFrame:
             e.warning()
 
     def forget(self):
+        self.__master.unbind("<Return>")
         self.__mainframe.forget()
 
     def pack(self):
         self.__mainframe.pack()
 
 
-"""
-root = Tk()
+"""root = Tk()
 frame = MyFrame(root)
 frame.pack()
-root.mainloop()
-"""
+root.mainloop()"""

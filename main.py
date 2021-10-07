@@ -10,6 +10,6 @@ root = Tk()
 mg = Frame1.Frame1(root)
 root.mainloop()
 firebase.uploadDtb()
-# firebase.uploadTrainingData()
+firebase.uploadTrainingData()
 
 ##Tạm tắt tải lên xuống file training vì tải vài lần là hết sạch cloud

@@ -73,8 +73,8 @@ def uploadTrainingData():
 # print(dict(e.val())["Time"])
 
 
-# updateRecord
-# database.child("1111").update({"Time": 20})
+def updateTime(id, t):
+    database.child("ID").child(str(id)).update({"Time": int(t)})
 
 
 # delete "1111"
