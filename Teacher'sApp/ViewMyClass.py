@@ -61,6 +61,7 @@ class MyFrame1:
         self.__scr.pack(side="right", fill="y")
 
     def __start(self):
+        firebase.setClassStatus(1)
         self.__sta.place_forget()
         self.__sto = Button(
             self.__frame,
@@ -74,6 +75,7 @@ class MyFrame1:
         self.__canvasConfig()
 
     def __stop(self):
+        firebase.setClassStatus(0)
         threading.Thread(target=firebase.config).start()
         self.__myCanvas.forget()
         self.__sto.place_forget()

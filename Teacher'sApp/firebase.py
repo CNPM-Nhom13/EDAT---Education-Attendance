@@ -79,8 +79,16 @@ def updateTime(id, t):
     database.child("ID").child(str(id)).update({"Time": t})
 
 
+def setClassStatus(st):
+    database.child("ClassStatus").update({"Status": st})
+
+
+def getClassStatus():
+    return database.child("ClassStatus").get().val()["Status"]
+
+
 def config():
-    database.remove()
+    database.child("ID").remove()
     connect = sqlite3.connect(r"database\database.db")
     cursor = connect.execute("SELECT * FROM people")
     lst = [i[0] for i in cursor]

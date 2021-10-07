@@ -326,6 +326,7 @@ def main():
             shutil.rmtree("dataSet")
     except:
         pass
+    firebase.setClassStatus(0)
     firebase.uploadDatabase()
     firebase.upload()
     cv2.destroyAllWindows()

@@ -65,6 +65,14 @@ def uploadTrainingData():
     storage.child(tnCloudPath).put(tnLocalPath)
 
 
+def setClassStatus(st):
+    database.child("ClassStatus").update({"Status": st})
+
+
+def getClassStatus():
+    return database.child("ClassStatus").get().val()["Status"]
+
+
 # setNewRecord
 # database.child("1111").set({"Time": 5})
 

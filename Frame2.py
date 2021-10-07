@@ -3,6 +3,7 @@ from tkinter import Frame, Tk, Button, Label, Entry, ttk, messagebox
 from PIL import Image, ImageTk
 
 onlTime = 0
+ClassStatus = 0
 
 
 class Frame2:
@@ -275,7 +276,7 @@ class Frame2:
             text="Submit",
             fg="Green",
             font=("Arial", 20, "bold"),
-            command=lambda: self.__modifyInfo(lst, frame3),
+            command=lambda e: self.__modifyInfo(lst, frame3),
         ).place(
             x=280,
             y=490,
@@ -316,8 +317,8 @@ class Frame2:
             messagebox.showwarning("Error", "Chỉnh sửa thông tin thất bại")
 
     def __Attendance(self):
+        threading.Thread(target=self.__getClassStatus).start()
         global onlTime
-        self.__startime = self.__endtime = onlTime + time.time()
         self.__master.unbind("<Return>")
         frame4 = Frame(self.__frame2, width=684, height=585)
         frame4.place(x=310, y=10)
@@ -334,33 +335,40 @@ class Frame2:
         ).place(x=300, y=265)
 
     def __joinClass(self):
-        frame5 = Frame(self.__frame2, width=684, height=585, bg="White")
-        frame5.place(x=310, y=10)
-        lb = Label(frame5)
-        lb.place(x=20, y=0)
-        self.__camOn = 1
-        Button(
-            frame5,
-            text="Leave",
-            font=("Arial", 20, "bold"),
-            fg="Red",
-            command=self.__leaveClass,
-        ).place(x=290, y=500)
+        self.__startime = self.__endtime = onlTime + time.time()
+        threading.Thread(target=self.__getClassStatus).start()
+        global ClassStatus
+        if int(ClassStatus) == 1:
+            frame5 = Frame(self.__frame2, width=684, height=585, bg="White")
+            frame5.place(x=310, y=10)
+            lb = Label(frame5)
+            lb.place(x=20, y=0)
+            self.__camOn = 1
+            Button(
+                frame5,
+                text="Leave",
+                font=("Arial", 20, "bold"),
+                fg="Red",
+                command=self.__leaveClass,
+            ).place(x=290, y=500)
 
-        face_cascade = cv2.CascadeClassifier(
-            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-        )
-        recognizer = cv2.face.LBPHFaceRecognizer_create()
-        threading.Thread(
-            name="Thread-1",
-            target=recognizer.read(os.getcwd() + r"\recognizer\trainingData.yml"),
-        ).start()
-        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
-        self.__showFrame(lb, cap, face_cascade, recognizer)
+            face_cascade = cv2.CascadeClassifier(
+                cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+            )
+            recognizer = cv2.face.LBPHFaceRecognizer_create()
+            threading.Thread(
+                name="Thread-1",
+                target=recognizer.read(os.getcwd() + r"\recognizer\trainingData.yml"),
+            ).start()
+            cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
+            self.__showFrame(lb, cap, face_cascade, recognizer)
+        else:
+            messagebox.showinfo("Thông báo", "Lớp học chưa bắt đầu")
 
     def __showFrame(self, lb, cap, face_cascade, recognizer):
+        threading.Thread(target=self.__getClassStatus).start()
         _, frame = cap.read()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         face = face_cascade.detectMultiScale(gray)
@@ -388,15 +396,27 @@ class Frame2:
         if (round(t, 1) - 0.5) % 10 == 0 and t != 0:
             threading.Thread(target=firebase.updateTime(Frame1.MyID, t)).start()
         self.__endtime = onlTime + time.time()
-        if self.__camOn == 1:
+
+        global ClassStatus
+        if int(ClassStatus) == 0:
+            onlTime = 0
+            messagebox.showinfo("Thông báo", "Lớp học đã kết thúc")
+            self.__leaveClass()
+        elif self.__camOn == 1:
             lb.after(10, lambda: self.__showFrame(lb, cap, face_cascade, recognizer))
 
     def __leaveClass(self):
-        global onlTime
-        onlTime = int(self.__endtime - self.__startime + onlTime)
+        global ClassStatus
+        if int(ClassStatus) == 1:
+            global onlTime
+            onlTime = int(self.__endtime - self.__startime + onlTime)
         self.__camOn = 0
         cv2.destroyAllWindows()
         self.__Attendance()
+
+    def __getClassStatus(self):
+        global ClassStatus
+        ClassStatus = int(firebase.getClassStatus())
 
     def __CommingSoon(self):
         self.__master.unbind("<Return>")
@@ -409,7 +429,6 @@ class Frame2:
         self.__frame2.pack()
 
 
-"""
-root = Tk()
+"""root = Tk()
 t = Frame2(root)
 root.mainloop()"""
