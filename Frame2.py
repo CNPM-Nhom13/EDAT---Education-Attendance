@@ -10,7 +10,6 @@ class Frame2:
     def __init__(self, master):
         self.__master = master
         self.__frame2 = Frame(master)
-        self.testApp()
         self.__config()
 
     def forget(self):
@@ -421,12 +420,6 @@ class Frame2:
     def __CommingSoon(self):
         self.__master.unbind("<Return>")
         self.__config()
-
-    def testApp(self):
-        Frame1.MyID = 102
-        Frame1.MyMajor = "Công Nghệ Thông Tin"
-        self.__frame2.config(width=1000, height=600)
-        self.__frame2.pack()
 
 
 """root = Tk()
