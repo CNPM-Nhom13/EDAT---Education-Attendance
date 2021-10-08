@@ -1,5 +1,5 @@
 from tkinter import Entry, Frame, Tk, Label, Button, Checkbutton, Toplevel, messagebox
-import cv2, os, Frame2, urllib, sqlite3, urllib.request, urllib.error, MyMainException
+import cv2, os, Frame2, urllib, sqlite3, urllib.request, urllib.error, time, MyMainException
 from PIL import Image, ImageTk
 
 MyID = MyMajor = None
@@ -137,6 +137,7 @@ class Frame1:
             cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
         )
         recognizer = cv2.face.LBPHFaceRecognizer_create()
+        time.sleep(1.5)
         recognizer.read(os.path.join(os.getcwd(), r"recognizer/trainingData.yml"))
         cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         while True:
