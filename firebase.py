@@ -70,7 +70,10 @@ def setClassStatus(st):
 
 
 def getClassStatus():
-    return database.child("ClassStatus").get().val()["Status"]
+    try:
+        return database.child("ClassStatus").get().val()["Status"]
+    except:
+        return 0
 
 
 # setNewRecord
@@ -83,6 +86,10 @@ def getClassStatus():
 
 def updateTime(id, t):
     database.child("ID").child(str(id)).update({"Time": int(t)})
+
+
+def getTime(id):
+    return database.child("ID").get().val().get(str(id))["Time"]
 
 
 # delete "1111"

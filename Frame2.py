@@ -10,7 +10,16 @@ class Frame2:
     def __init__(self, master):
         self.__master = master
         self.__frame2 = Frame(master)
+        threading.Thread(target=self.__getOnlTime).start()
+        self.__camOn = 0
         self.__config()
+
+    def __getOnlTime(self):
+        global onlTime
+        try:
+            onlTime = firebase.getTime(Frame1.MyID)
+        except:
+            onlTime = 0
 
     def forget(self):
         self.__frame2.forget()
@@ -107,179 +116,195 @@ class Frame2:
         self.__frame2.pack(fill="both", expand=1)
 
     def __SignOut(self):
-        self.__master.unbind("<Return>")
-        Frame1.MyID = None
-        self.__frame2.forget()
-        self.__frame1 = Frame1.Frame1(self.__master)
-        self.__frame1.pack()
+        if self.__camOn == 0:
+            self.__master.unbind("<Return>")
+            Frame1.MyID = None
+            self.__frame2.forget()
+            self.__frame1 = Frame1.Frame1(self.__master)
+            self.__frame1.pack()
+        else:
+            messagebox.showwarning("Error", "Bạn chưa rời lớp học")
 
     def __showInfo(self):
-        self.__master.unbind("<Return>")
-        connect = sqlite3.connect(os.path.join(os.getcwd(), r"database\database.db"))
-        self.__cursor = connect.execute(
-            "SELECT * FROM people WHERE ID=" + str(Frame1.MyID)
-        )
-        record = None
-        for i in self.__cursor:
-            record = i
-        img = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2b.png")
-        imgbt = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2ba.png")
-        imgbtt = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2bb.png")
+        if self.__camOn == 0:
+            self.__master.unbind("<Return>")
+            connect = sqlite3.connect(
+                os.path.join(os.getcwd(), r"database\database.db")
+            )
+            self.__cursor = connect.execute(
+                "SELECT * FROM people WHERE ID=" + str(Frame1.MyID)
+            )
+            record = None
+            for i in self.__cursor:
+                record = i
+            img = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2b.png")
+            imgbt = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2ba.png")
+            imgbtt = ImageTk.PhotoImage(file=os.getcwd() + r"\resource\frame2bb.png")
 
-        lb2b = Label(self.__frame2, image=img)
-        lb2b.image_names = img
-        lb2b.place(x=310, y=10)
+            lb2b = Label(self.__frame2, image=img)
+            lb2b.image_names = img
+            lb2b.place(x=310, y=10)
 
-        lbName = Label(
-            self.__frame2,
-            text=record[2],
-            font=("Arial", 20),
-            width=283,
-            height=50,
-            image=imgbt,
-            compound="center",
-        )
-        lbName.image_names = imgbt
-        lbName.place(x=347, y=140)
+            lbName = Label(
+                self.__frame2,
+                text=record[2],
+                font=("Arial", 20),
+                width=283,
+                height=50,
+                image=imgbt,
+                compound="center",
+            )
+            lbName.image_names = imgbt
+            lbName.place(x=347, y=140)
 
-        lbName = Label(
-            self.__frame2,
-            text=record[3],
-            font=("Arial", 20),
-            width=283,
-            height=50,
-            image=imgbt,
-            compound="center",
-        )
-        lbName.image_names = imgbt
-        lbName.place(x=667, y=140)
+            lbName = Label(
+                self.__frame2,
+                text=record[3],
+                font=("Arial", 20),
+                width=283,
+                height=50,
+                image=imgbt,
+                compound="center",
+            )
+            lbName.image_names = imgbt
+            lbName.place(x=667, y=140)
 
-        lbName = Label(
-            self.__frame2,
-            text=record[4],
-            font=("Arial", 20),
-            width=283,
-            height=50,
-            image=imgbt,
-            compound="center",
-        )
-        lbName.image_names = imgbt
-        lbName.place(x=347, y=232)
+            lbName = Label(
+                self.__frame2,
+                text=record[4],
+                font=("Arial", 20),
+                width=283,
+                height=50,
+                image=imgbt,
+                compound="center",
+            )
+            lbName.image_names = imgbt
+            lbName.place(x=347, y=232)
 
-        lbName = Label(
-            self.__frame2,
-            text=record[5],
-            font=("Arial", 20),
-            width=283,
-            height=50,
-            image=imgbt,
-            compound="center",
-        )
-        lbName.image_names = imgbt
-        lbName.place(x=667, y=232)
+            lbName = Label(
+                self.__frame2,
+                text=record[5],
+                font=("Arial", 20),
+                width=283,
+                height=50,
+                image=imgbt,
+                compound="center",
+            )
+            lbName.image_names = imgbt
+            lbName.place(x=667, y=232)
 
-        lbName = Label(
-            self.__frame2,
-            text=record[6],
-            font=("Arial", 20),
-            width=283,
-            height=50,
-            image=imgbt,
-            compound="center",
-        )
-        lbName.image_names = imgbt
-        lbName.place(x=347, y=324)
+            lbName = Label(
+                self.__frame2,
+                text=record[6],
+                font=("Arial", 20),
+                width=283,
+                height=50,
+                image=imgbt,
+                compound="center",
+            )
+            lbName.image_names = imgbt
+            lbName.place(x=347, y=324)
 
-        lbName = Label(
-            self.__frame2,
-            text=record[8],
-            font=("Arial", 20),
-            width=283,
-            height=50,
-            image=imgbt,
-            compound="center",
-        )
-        lbName.image_names = imgbt
-        lbName.place(x=667, y=324)
+            lbName = Label(
+                self.__frame2,
+                text=record[8],
+                font=("Arial", 20),
+                width=283,
+                height=50,
+                image=imgbt,
+                compound="center",
+            )
+            lbName.image_names = imgbt
+            lbName.place(x=667, y=324)
 
-        lbName = Label(
-            self.__frame2,
-            text=record[7],
-            font=("Arial", 15),
-            width=605,
-            height=50,
-            image=imgbtt,
-            compound="center",
-        )
-        lbName.image_names = imgbtt
-        lbName.place(x=347, y=416)
+            lbName = Label(
+                self.__frame2,
+                text=record[7],
+                font=("Arial", 15),
+                width=605,
+                height=50,
+                image=imgbtt,
+                compound="center",
+            )
+            lbName.image_names = imgbtt
+            lbName.place(x=347, y=416)
 
-        lbName = Label(
-            self.__frame2,
-            text=record[9],
-            font=("Arial", 15),
-            width=605,
-            height=50,
-            image=imgbtt,
-            compound="center",
-        )
-        lbName.image_names = imgbtt
-        lbName.place(x=347, y=508)
-        connect.commit()
-        connect.close()
+            lbName = Label(
+                self.__frame2,
+                text=record[9],
+                font=("Arial", 15),
+                width=605,
+                height=50,
+                image=imgbtt,
+                compound="center",
+            )
+            lbName.image_names = imgbtt
+            lbName.place(x=347, y=508)
+            connect.commit()
+            connect.close()
+        else:
+            messagebox.showwarning("Error", "Bạn chưa rời lớp học")
 
     def __ctdt(self):
-        self.__master.unbind("<Return>")
-        mj = (
-            "cntt"
-            if Frame1.MyMajor == "Công Nghệ Thông Tin"
-            else "kte"
-            if Frame1.MyMajor == "Kinh Tế"
-            else "ck"
-        )
-        img = ImageTk.PhotoImage(file="resource\{}.png".format(mj))
-        lb = Label(self.__frame2, image=img)
-        lb.image_names = img
-        lb.place(x=310, y=10)
+        if self.__camOn == 0:
+            self.__master.unbind("<Return>")
+            mj = (
+                "cntt"
+                if Frame1.MyMajor == "Công Nghệ Thông Tin"
+                else "kte"
+                if Frame1.MyMajor == "Kinh Tế"
+                else "ck"
+            )
+            img = ImageTk.PhotoImage(file="resource\{}.png".format(mj))
+            lb = Label(self.__frame2, image=img)
+            lb.image_names = img
+            lb.place(x=310, y=10)
+        else:
+            messagebox.showwarning("Error", "Bạn chưa rời lớp học")
 
     def __updateInfo(self):
-        frame3 = Frame(self.__frame2)
-        frame3.place(x=310, y=10)
-        img = ImageTk.PhotoImage(file=r"resource\frame2c.png")
-        lb = Label(frame3, image=img)
-        lb.image_names = img
-        lb.pack()
+        if self.__camOn == 0:
+            frame3 = Frame(self.__frame2)
+            frame3.place(x=310, y=10)
+            img = ImageTk.PhotoImage(file=r"resource\frame2c.png")
+            lb = Label(frame3, image=img)
+            lb.image_names = img
+            lb.pack()
 
-        etrName = Entry(frame3, font=("Arial", 15))
-        etrName.place(x=300, y=130)
+            etrName = Entry(frame3, font=("Arial", 15))
+            etrName.place(x=300, y=130)
 
-        options = ["", "Nam", "Nữ", "Khác"]
-        etrGender = ttk.Combobox(frame3, font=("Arial", 15), width=18, values=options)
-        etrGender.current(0)
-        etrGender.place(x=300, y=210)
+            options = ["", "Nam", "Nữ", "Khác"]
+            etrGender = ttk.Combobox(
+                frame3, font=("Arial", 15), width=18, values=options
+            )
+            etrGender.current(0)
+            etrGender.place(x=300, y=210)
 
-        etrSDT = Entry(frame3, font=("Arial", 15))
-        etrSDT.place(x=300, y=290)
+            etrSDT = Entry(frame3, font=("Arial", 15))
+            etrSDT.place(x=300, y=290)
 
-        etrFolk = Entry(frame3, font=("Arial", 15))
-        etrFolk.place(x=300, y=370)
+            etrFolk = Entry(frame3, font=("Arial", 15))
+            etrFolk.place(x=300, y=370)
 
-        etrAddress = Entry(frame3, font=("Arial", 15))
-        etrAddress.place(x=300, y=450)
+            etrAddress = Entry(frame3, font=("Arial", 15))
+            etrAddress.place(x=300, y=450)
 
-        lst = [etrName, etrGender, etrSDT, etrFolk, etrAddress]
+            lst = [etrName, etrGender, etrSDT, etrFolk, etrAddress]
 
-        self.__master.bind("<Return>", lambda e: self.__modifyInfo(lst, frame3))
-        Button(
-            frame3,
-            text="Submit",
-            fg="Green",
-            font=("Arial", 20, "bold"),
-            command=lambda e: self.__modifyInfo(lst, frame3),
-        ).place(
-            x=280,
-            y=490,
-        )
+            self.__master.bind("<Return>", lambda e: self.__modifyInfo(lst, frame3))
+            Button(
+                frame3,
+                text="Submit",
+                fg="Green",
+                font=("Arial", 20, "bold"),
+                command=lambda e: self.__modifyInfo(lst, frame3),
+            ).place(
+                x=280,
+                y=490,
+            )
+        else:
+            messagebox.showwarning("Error", "Bạn chưa rời lớp học")
 
     def __modifyInfo(self, lst, frame3):
         try:
