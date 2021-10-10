@@ -104,6 +104,14 @@ class MyGui:
         self.__master.bind("<Return>", lambda e: self.__getInfo(etr))
         Button(
             self.__frame1,
+            text="Xóa nhận dạng",
+            font=("Arial", 10, "bold"),
+            fg="#009BFA",
+            borderwidth=0,
+            command=lambda: self.__deleteRecognizer(etr),
+        ).place(x=390, y=195)
+        Button(
+            self.__frame1,
             text="Submit",
             fg="green",
             font=("Arial", 20, "bold"),
@@ -165,20 +173,49 @@ class MyGui:
                         isRecordExist = 1
 
                 if isRecordExist == 1:
-                    self.__frame1.forget()
-                    self.__frame2 = Frame(self.__master)
-                    self.__label = Label(self.__frame2)
-                    self.__label.pack()
-                    self.__frame2.pack(fill="both", expand=1)
-                    Button(
-                        self.__frame2,
-                        text="Next Step",
-                        fg="Green",
-                        font=("Arial", 15, "bold"),
-                        command=self.__trainingData,
-                    ).pack()
-                    self.__master.unbind("<Return>")
-                    self.__getData()
+                    path_yml = r"recognizer\trainingData.yml"
+                    with open(path_yml, "r+") as f:
+                        s = ""
+                        l = []
+                        for i in f:
+                            if "      - !!opencv-matrix" in i:
+                                l.append(s)
+                                s = i
+                            elif "   labels: !!opencv-matrix" in i:
+                                l.append(s)
+                                s = i
+                            else:
+                                s += i
+                        l.append(s)
+                        try:
+                            idpos = [
+                                i.strip()
+                                for i in l[len(l) - 1]
+                                .split("]")[0]
+                                .split("[")[1]
+                                .split(",")
+                            ].index(str(self.__id))
+                            messagebox.showinfo(
+                                "Can't process",
+                                "Bạn đã có dữ liệu nhận dạng, hãy xóa dữ liệu cũ",
+                            )
+                        except:
+                            idpos = -1
+                    if idpos < 0:
+                        self.__frame1.forget()
+                        self.__frame2 = Frame(self.__master)
+                        self.__label = Label(self.__frame2)
+                        self.__label.pack()
+                        self.__frame2.pack(fill="both", expand=1)
+                        Button(
+                            self.__frame2,
+                            text="Next Step",
+                            fg="Green",
+                            font=("Arial", 15, "bold"),
+                            command=self.__trainingData,
+                        ).pack()
+                        self.__master.unbind("<Return>")
+                        self.__getData()
                 else:
                     messagebox.showwarning(
                         "Can't Sign In", "Sai ID hoặc không có trong hệ thống"
@@ -296,6 +333,90 @@ class MyGui:
     def __MyClass(self):
         self.__frame4 = ViewMyClass.MyFrame1(self.__frame1)
         # self.__frame4.pack()
+
+    def __deleteRecognizer(self, etr):
+        connection = False
+        try:
+            if not ConnectionCheck.internet_on():
+                raise Exception
+            else:
+                connection = True
+        except Exception:
+            messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
+        if connection == True:
+            self.__id = etr.get()
+
+            if self.__id == "":
+                messagebox.showwarning("Can't Sign In", "Tài khoản không được để trống")
+            else:
+                connect = sqlite3.connect(
+                    os.path.join(os.getcwd(), r"database/database.db")
+                )
+                query = "SELECT * FROM people WHERE ID=" + str(self.__id)
+                cursor = connect.execute(query)
+
+                isRecordExist = 0
+                for row in cursor:
+                    if int(self.__id) == int(row[0]):
+                        isRecordExist = 1
+
+                if isRecordExist == 1:
+
+                    self.__master.unbind("<Return>")
+                    self.__deleteFace(self.__id)
+                else:
+                    messagebox.showwarning(
+                        "Can't Sign In", "Sai ID hoặc không có trong hệ thống"
+                    )
+        else:
+            messagebox.showwarning("Lost Connection", "Không có kết nối mạng")
+
+    def __deleteFace(self, n):
+        path_yml = os.getcwd() + r"\recognizer\trainingData.yml"
+        path_save = os.getcwd() + r"\recognizer\trainingData.yml"
+        with open(path_yml, "r+") as f:
+            s = ""
+            l = []
+            for i in f:
+                if "      - !!opencv-matrix" in i:
+                    l.append(s)
+                    s = i
+                elif "   labels: !!opencv-matrix" in i:
+                    l.append(s)
+                    s = i
+                else:
+                    s += i
+            l.append(s)
+            l1 = l[len(l) - 1].split("]")
+            l2 = l1[0].split("[")
+            l3 = l2[1].split(",")
+            vt = []
+            oldQ = len(l3)
+            for i, j in enumerate(l3):
+                if str(n) in j.split():
+                    vt.append(i)
+            svt = vt[0]
+            for i in range(len(vt)):
+                l.pop(svt + 1)
+                l3.pop(svt)
+            l3 = [i.strip() for i in l3]
+            for i, j in enumerate(l3):
+                if i != (len(l3) - 1):
+                    l3[i] += ","
+                if (i + 1) % 12 == 0 and i != 1:
+                    l3[i] = j + ",\n         "
+            l2[1] = "[ " + " ".join(l3) + " ]"
+            oldPos = l2[0].find(str(oldQ))
+            endPos = oldPos + l2[0][oldPos:].find(" ") - 1
+            l2[0] = l2[0].replace(l2[0][oldPos:endPos], str(len(l3)))
+            l1 = "".join(l2) + l1[1] + "]"
+            s = ""
+            for i in range(len(l) - 1):
+                s += l[i]
+            s = s + l1 + "\n"
+        f2 = open(path_save, "w")
+        f2.write(s)
+        messagebox.showinfo("Done", "Xóa nhận dạng thành công")
 
 
 def dowloadDTB():
