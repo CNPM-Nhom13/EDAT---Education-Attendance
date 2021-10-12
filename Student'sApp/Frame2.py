@@ -387,11 +387,12 @@ class Frame2:
             cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
             cap.set(cv2.CAP_PROP_FRAME_WIDTH, 500)
             cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
-            self.__showFrame(lb, cap, face_cascade, recognizer)
+            listID = []
+            self.__showFrame(lb, cap, face_cascade, recognizer, listID)
         else:
             messagebox.showinfo("Thông báo", "Lớp học chưa bắt đầu")
 
-    def __showFrame(self, lb, cap, face_cascade, recognizer):
+    def __showFrame(self, lb, cap, face_cascade, recognizer, listID):
         threading.Thread(target=self.__getClassStatus).start()
         _, frame = cap.read()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -400,6 +401,15 @@ class Frame2:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             roi_gray = gray[y : y + h, x : x + w]
             id, tl = recognizer.predict(roi_gray)
+            listID.append(id)
+            if len(listID) == 100:
+                if listID.count(int(Frame1.MyID)) < 10:
+                    messagebox.showwarning(
+                        "EDAT",
+                        "Bạn đã bị kick khỏi lớp do thông tin nhận dạng không đúng",
+                    )
+                    self.__leaveClass()
+                listID = []
             if tl < 85:
                 cv2.putText(
                     frame,
@@ -427,7 +437,9 @@ class Frame2:
             messagebox.showinfo("Thông báo", "Lớp học đã kết thúc")
             self.__leaveClass()
         elif self.__camOn == 1:
-            lb.after(10, lambda: self.__showFrame(lb, cap, face_cascade, recognizer))
+            lb.after(
+                10, lambda: self.__showFrame(lb, cap, face_cascade, recognizer, listID)
+            )
 
     def __leaveClass(self):
         global ClassStatus
